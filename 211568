@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Définition de la structure d'un nœud
+typedef struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+// Création d'un nouveau nœud
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Erreur d'allocation mémoire.\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->prev = newNode->next = NULL;
+    return newNode;
+}
+
+// Insertion triée dans une liste doublement chaînée
+void insertSorted(Node** head, int data) {
+    Node* newNode = createNode(data);
+
+    // Si la liste est vide
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+
+    Node* current = *head;
+
+    // Si le nouvel élément doit être inséré avant le premier élément
+    if (data < current->data) {
+        newNode->next = current;
+        current->prev = newNode;
+        *head = newNode;
+        return;
+    }
+
+    // Recherche de la bonne position
+    while (current->next != NULL && current->next->data < data) {
+        current = current->next;
+    }
+
+    // Insertion après "current"
+    newNode->next = current->next;
+    if (current->next != NULL) {
+        current->next->prev = newNode;
+    }
+    current->next = newNode;
+    newNode->prev = current;
+}
+
+// Affichage de la liste du début à la fin
+void displayForward(Node* head) {
+    Node* temp = head;
+    printf("Liste en avant : ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Affichage de la liste de la fin au début
+void displayBackward(Node* head) {
+    Node* temp = head;
+
+    // Aller jusqu'à la fin
+    while (temp && temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    printf("Liste en arrière : ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->prev;
+    }
+    printf("\n");
+}
+
+int main() {
+    Node* head = NULL;
+
+    // Insertion des éléments
+    insertSorted(&head, 10);
+    insertSorted(&head, 5);
+    insertSorted(&head, 20);
+    insertSorted(&head, 15);
+    insertSorted(&head, 1);
+
+    // Affichage
+    displayForward(head);
+    displayBackward(head);
+
+    return 0;
+}
